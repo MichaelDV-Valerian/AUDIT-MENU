@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audit Menu PM - Generator Laporan</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Custom scrollbar untuk area pratinjau & daftar item */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- Header Navbar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm shrink-0">
+          <!-- Icon Clipboard Check -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-tight">Audit Menu PM</h1>
+          <p class="text-xs text-slate-500">Generator Laporan Status & Stok Menu Otomatis</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span id="saveIndicator" class="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Tersimpan Otomatis
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- BAGIAN ATAS: Pengaturan Waktu Audit -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-semibold text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </span>
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Waktu Audit</h2>
+            <p class="text-xs text-slate-500">Ketik menu lalu tekan <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-[11px] font-mono">Enter</kbd> atau <em>paste</em> banyak baris sekaligus</p>
+          </div>
+        </div>
+        <button type="button" id="btnNow" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 active:bg-blue-200 border border-blue-200 transition cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Set Sekarang
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Input Tanggal -->
+        <div>
+          <label for="auditDate" class="block text-xs font-medium text-slate-600 mb-1.5">Tanggal Audit (DD/MM/YYYY)</label>
+          <input type="date" id="auditDate" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition" />
+        </div>
+
+        <!-- Input Jam -->
+        <div>
+          <label for="auditTime" class="block text-xs font-medium text-slate-600 mb-1.5">Jam Audit (Format HH.MM)</label>
+          <input type="time" id="auditTime" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition" />
+        </div>
+      </div>
+    </section>
+
+    <!-- BAGIAN TENGAH: KETIGA INPUTAN MENYAMPING SEBARIS (3 Kolom Horizontal) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+
+      <!-- KOLOM 1: (MENU TIDAK TERBATAS - MENU TIDAK ONLINE) -->
+      <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col">
+        <div class="flex items-start justify-between gap-2 mb-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-md bg-amber-100 text-amber-800">Kategori 1</span>
+              <span id="count-cat1" class="text-xs font-medium text-slate-500">0 item</span>
+            </div>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-900 mt-1.5 leading-snug">(MENU TIDAK TERBATAS - MENU TIDAK ONLINE)</h3>
+          </div>
+          <button type="button" onclick="clearCategory('cat1')" class="text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition shrink-0 cursor-pointer" title="Kosongkan kategori ini">
+            Hapus Semua
+          </button>
+        </div>
+
+        <div class="flex gap-2">
+          <textarea id="input-cat1" rows="1" placeholder="Input nama menu..." class="flex-1 min-w-0 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition resize-none overflow-hidden"></textarea>
+          <button type="button" onclick="addMenuFromInput('cat1')" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-sm font-medium transition shrink-0 flex items-center justify-center gap-1 cursor-pointer" title="Tambah menu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Daftar Item Kategori 1 -->
+        <ul id="list-cat1" class="mt-3 space-y-1.5 max-h-60 overflow-y-auto pr-1 flex-1"></ul>
+      </section>
+
+      <!-- KOLOM 2: (MENU STOK 0 - MENU ONLINE) -->
+      <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col">
+        <div class="flex items-start justify-between gap-2 mb-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-md bg-rose-100 text-rose-800">Kategori 2</span>
+              <span id="count-cat2" class="text-xs font-medium text-slate-500">0 item</span>
+            </div>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-900 mt-1.5 leading-snug">(MENU STOK 0 - MENU ONLINE)</h3>
+          </div>
+          <button type="button" onclick="clearCategory('cat2')" class="text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition shrink-0 cursor-pointer" title="Kosongkan kategori ini">
+            Hapus Semua
+          </button>
+        </div>
+
+        <div class="flex gap-2">
+          <textarea id="input-cat2" rows="1" placeholder="Input nama menu..." class="flex-1 min-w-0 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition resize-none overflow-hidden"></textarea>
+          <button type="button" onclick="addMenuFromInput('cat2')" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-sm font-medium transition shrink-0 flex items-center justify-center gap-1 cursor-pointer" title="Tambah menu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Daftar Item Kategori 2 -->
+        <ul id="list-cat2" class="mt-3 space-y-1.5 max-h-60 overflow-y-auto pr-1 flex-1"></ul>
+      </section>
+
+      <!-- KOLOM 3: (MENU STOK 0 - MENU TIDAK ONLINE) -->
+      <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col">
+        <div class="flex items-start justify-between gap-2 mb-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-md bg-slate-200 text-slate-800">Kategori 3</span>
+              <span id="count-cat3" class="text-xs font-medium text-slate-500">0 item</span>
+            </div>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-900 mt-1.5 leading-snug">(MENU STOK 0 - MENU TIDAK ONLINE)</h3>
+          </div>
+          <button type="button" onclick="clearCategory('cat3')" class="text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition shrink-0 cursor-pointer" title="Kosongkan kategori ini">
+            Hapus Semua
+          </button>
+        </div>
+
+        <div class="flex gap-2">
+          <textarea id="input-cat3" rows="1" placeholder="Input nama menu..." class="flex-1 min-w-0 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition resize-none overflow-hidden"></textarea>
+          <button type="button" onclick="addMenuFromInput('cat3')" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-sm font-medium transition shrink-0 flex items-center justify-center gap-1 cursor-pointer" title="Tambah menu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Daftar Item Kategori 3 -->
+        <ul id="list-cat3" class="mt-3 space-y-1.5 max-h-60 overflow-y-auto pr-1 flex-1"></ul>
+      </section>
+
+    </div>
+
+    <!-- BAGIAN BAWAH: HASIL KESELURUHAN DI BAWAH (Full-Width) -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- Header Card Preview -->
+      <div class="px-5 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          <h2 class="text-base font-bold text-slate-900">Hasil Keseluruhan Laporan</h2>
+          <span id="totalMenuCount" class="text-xs font-medium text-slate-600 bg-slate-200/70 px-2.5 py-0.5 rounded-full">Total: 0 item</span>
+        </div>
+
+        <!-- Opsi Tambahan Opsional -->
+        <div class="flex items-center gap-4 text-xs">
+          <label class="inline-flex items-center gap-1.5 cursor-pointer text-slate-600 select-none">
+            <input type="checkbox" id="optUppercase" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
+            <span>Huruf Kapital Otomatis</span>
+          </label>
+          <label class="inline-flex items-center gap-1.5 cursor-pointer text-slate-600 select-none" title="Tambahkan spasi setelah titik bullet (• NAMA)">
+            <input type="checkbox" id="optBulletSpace" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
+            <span>Spasi Bullet</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Area Pratinjau Teks -->
+      <div class="p-5 bg-[#efeae2]/60">
+        <div class="bg-white rounded-2xl rounded-tl-sm p-5 shadow-sm border border-slate-200/80">
+          <pre id="previewOutput" class="font-sans text-sm text-slate-800 whitespace-pre-wrap break-words leading-relaxed select-all"></pre>
+        </div>
+      </div>
+
+      <!-- Tombol Aksi Utama (Salin & Reset Sejajar) -->
+      <div class="p-5 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+        <!-- Tombol Salin Teks -->
+        <button type="button" id="btnCopy" class="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-sm sm:text-base shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+          <span>Salin Teks</span>
+        </button>
+
+        <!-- Tombol Reset Data -->
+        <button type="button" id="btnResetModal" class="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 font-semibold text-sm sm:text-base transition flex items-center justify-center gap-2 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <span>Reset Data</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-400">
+      Aplikasi Audit Menu PM &bull; Data tersimpan lokal di browser Anda
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 left-5 sm:left-auto z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 max-w-sm ml-auto">
+      <div id="toastIcon" class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <p id="toastMessage" class="text-sm font-medium">Teks berhasil disalin!</p>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Reset -->
+  <div id="resetModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 animate-[fadeIn_0.15s_ease-out]">
+      <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900">Reset Semua Data Audit?</h3>
+      <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+        Semua daftar menu di ketiga kategori akan dihapus dan waktu akan diatur ulang ke hari ini agar siap digunakan esok hari. Pastikan Anda sudah menyalin laporan hari ini.
+      </p>
+      <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5">
+        <button type="button" id="btnCancelReset" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium text-sm transition cursor-pointer">
+          Batal
+        </button>
+        <button type="button" id="btnConfirmReset" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm shadow-sm transition cursor-pointer">
+          Ya, Reset Sekarang
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden textarea fallback untuk copy clipboard di iFrame -->
+  <textarea id="clipboardFallback" class="sr-only" aria-hidden="true"></textarea>
+
+  <script>
+    /**
+     * State Utama Aplikasi Audit Menu PM
+     */
+    const STORAGE_KEY = 'audit_menu_pm_data_v1';
+
+    let state = {
+      date: '', // format YYYY-MM-DD
+      time: '', // format HH:MM
+      cat1: [], // MENU TIDAK TERBATAS - STATUS TIDAK ONLINE
+      cat2: [], // MENU STOK 0 - STATUS ONLINE
+      cat3: [], // MENU STOK 0 - STATUS TIDAK ONLINE
+      uppercase: false,
+      bulletSpace: false
+    };
+
+    // Referensi Elemen DOM
+    const elDate = document.getElementById('auditDate');
+    const elTime = document.getElementById('auditTime');
+    const elBtnNow = document.getElementById('btnNow');
+    const elPreview = document.getElementById('previewOutput');
+    const elTotalCount = document.getElementById('totalMenuCount');
+    const elOptUppercase = document.getElementById('optUppercase');
+    const elOptBulletSpace = document.getElementById('optBulletSpace');
+    const elBtnCopy = document.getElementById('btnCopy');
+    const elBtnResetModal = document.getElementById('btnResetModal');
+    const elResetModal = document.getElementById('resetModal');
+    const elBtnCancelReset = document.getElementById('btnCancelReset');
+    const elBtnConfirmReset = document.getElementById('btnConfirmReset');
+
+    /**
+     * Mendapatkan tanggal & jam saat ini dalam format input HTML
+     */
+    function getCurrentDateTime() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+
+      return {
+        dateStr: `${yyyy}-${mm}-${dd}`,
+        timeStr: `${hh}:${min}`
+      };
+    }
+
+    /**
+     * Memformat YYYY-MM-DD menjadi DD/MM/YYYY
+     */
+    function formatDisplayDate(isoDate) {
+      if (!isoDate || !isoDate.includes('-')) return 'DD/MM/YYYY';
+      const [yyyy, mm, dd] = isoDate.split('-');
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
+    /**
+     * Memformat HH:MM menjadi HH.MM (menggunakan titik)
+     */
+    function formatDisplayTime(timeStr) {
+      if (!timeStr || !timeStr.includes(':')) return '00.00';
+      return timeStr.replace(':', '.');
+    }
+
+    /**
+     * Menyimpan state ke localStorage
+     */
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error('Gagal menyimpan ke localStorage:', e);
+      }
+    }
+
+    /**
+     * Memuat state dari localStorage atau inisialisasi waktu sekarang
+     */
+    function loadState() {
+      const { dateStr, timeStr } = getCurrentDateTime();
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = {
+            date: parsed.date || dateStr,
+            time: parsed.time || timeStr,
+            cat1: Array.isArray(parsed.cat1) ? parsed.cat1 : [],
+            cat2: Array.isArray(parsed.cat2) ? parsed.cat2 : [],
+            cat3: Array.isArray(parsed.cat3) ? parsed.cat3 : [],
+            uppercase: Boolean(parsed.uppercase),
+            bulletSpace: Boolean(parsed.bulletSpace)
+          };
+        } else {
+          state.date = dateStr;
+          state.time = timeStr;
+        }
+      } catch (e) {
+        state.date = dateStr;
+        state.time = timeStr;
+      }
+
+      // Sinkronkan ke UI input
+      elDate.value = state.date;
+      elTime.value = state.time;
+      elOptUppercase.checked = state.uppercase;
+      elOptBulletSpace.checked = state.bulletSpace;
+    }
+
+    /**
+     * Menambahkan item menu ke kategori tertentu (mendukung multi-baris)
+     */
+    function addMenuFromInput(catKey) {
+      const inputEl = document.getElementById(`input-${catKey}`);
+      if (!inputEl) return;
+
+      const rawText = inputEl.value;
+      if (!rawText.trim()) {
+        inputEl.focus();
+        return;
+      }
+
+      // Pisahkan berdasarkan baris baru, bersihkan karakter bullet di awal jika user copy-paste dari daftar lain
+      const lines = rawText
+        .split(/\r?\n/)
+        .map(line => line.replace(/^[•\-\*\)\s]+/, '').trim())
+        .filter(line => line.length > 0);
+
+      if (lines.length > 0) {
+        state[catKey].push(...lines);
+        inputEl.value = '';
+        autoResizeTextarea(inputEl);
+        saveState();
+        renderAll();
+        showToast(`${lines.length} menu ditambahkan`);
+      }
+      inputEl.focus();
+    }
+
+    /**
+     * Menghapus satu item menu berdasarkan indeks
+     */
+    function removeMenuItem(catKey, index) {
+      state[catKey].splice(index, 1);
+      saveState();
+      renderAll();
+    }
+
+    /**
+     * Mengosongkan satu kategori tertentu
+     */
+    function clearCategory(catKey) {
+      if (state[catKey].length === 0) return;
+      state[catKey] = [];
+      saveState();
+      renderAll();
+      showToast('Daftar kategori dikosongkan');
+    }
+
+    /**
+     * Render daftar item pada masing-masing card kategori
+     */
+    function renderCategoryList(catKey) {
+      const listEl = document.getElementById(`list-${catKey}`);
+      const countEl = document.getElementById(`count-${catKey}`);
+      const items = state[catKey];
+
+      countEl.textContent = `${items.length} item`;
+
+      if (items.length === 0) {
+        listEl.innerHTML = `
+          <li class="text-xs text-slate-400 italic py-3 px-3 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center">
+            Belum ada menu
+          </li>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = items.map((item, idx) => {
+        const displayItem = state.uppercase ? item.toUpperCase() : item;
+        return `
+          <li class="group flex items-center justify-between gap-2 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-1.5 text-sm transition">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-xs font-mono text-slate-400 w-4 shrink-0">${idx + 1}.</span>
+              <span class="text-slate-800 font-medium truncate">${escapeHtml(displayItem)}</span>
+            </div>
+            <button type="button" onclick="removeMenuItem('${catKey}', ${idx})" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-lg transition shrink-0 cursor-pointer" title="Hapus item">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </li>
+        `;
+      }).join('');
+    }
+
+    /**
+     * Membangun teks laporan sesuai format persis yang diminta user
+     */
+    function generateFormattedText() {
+      const formattedDate = formatDisplayDate(state.date);
+      const formattedTime = formatDisplayTime(state.time);
+      const bulletPrefix = state.bulletSpace ? '• ' : '•';
+
+      const formatItems = (items) => {
+        if (!items || items.length === 0) {
+          return `${bulletPrefix}-`;
+        }
+        return items
+          .map(name => {
+            const cleanName = state.uppercase ? name.toUpperCase() : name;
+            return `${bulletPrefix}${cleanName}`;
+          })
+          .join('\n');
+      };
+
+      const section1 = formatItems(state.cat1);
+      const section2 = formatItems(state.cat2);
+      const section3 = formatItems(state.cat3);
+
+      return `*AUDIT MENU PM ${formattedDate} jam ${formattedTime}*
+
+
+
+(MENU TIDAK TERBATAS - MENU TIDAK ONLINE)
+${section1}
+
+(MENU STOK 0 - MENU ONLINE)
+${section2}
+
+(MENU STOK 0 - MENU TIDAK ONLINE)
+${section3}`;
+    }
+
+    /**
+     * Render seluruh komponen UI & Live Preview
+     */
+    function renderAll() {
+      renderCategoryList('cat1');
+      renderCategoryList('cat2');
+      renderCategoryList('cat3');
+
+      const outputText = generateFormattedText();
+      elPreview.textContent = outputText;
+
+      const total = state.cat1.length + state.cat2.length + state.cat3.length;
+      elTotalCount.textContent = `Total: ${total} item`;
+    }
+
+    /**
+     * Auto-resize tinggi textarea saat user mengetik atau paste banyak baris
+     */
+    function autoResizeTextarea(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+    }
+
+    /**
+     * Escape HTML untuk mencegah XSS saat merender input user
+     */
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    /**
+     * Menampilkan notifikasi toast
+     */
+    let toastTimeout;
+    function showToast(message) {
+      const toastEl = document.getElementById('toast');
+      const msgEl = document.getElementById('toastMessage');
+      msgEl.textContent = message;
+
+      toastEl.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      toastEl.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toastEl.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+        toastEl.classList.remove('translate-y-0', 'opacity-100');
+      }, 2600);
+    }
+
+    /**
+     * Menyalin teks ke clipboard dengan dukungan fallback document.execCommand('copy')
+     */
+    function copyReportToClipboard() {
+      const textToCopy = generateFormattedText();
+      const fallbackEl = document.getElementById('clipboardFallback');
+      fallbackEl.value = textToCopy;
+      fallbackEl.select();
+      fallbackEl.setSelectionRange(0, 99999);
+
+      let success = false;
+      try {
+        success = document.execCommand('copy');
+      } catch (err) {
+        success = false;
+      }
+
+      if (success) {
+        showToast('Teks berhasil disalin!');
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => showToast('Teks berhasil disalin!'))
+          .catch(() => showToast('Gagal menyalin teks. Silakan salin manual.'));
+      } else {
+        showToast('Silakan salin teks dari kotak pratinjau.');
+      }
+    }
+
+    /**
+     * Setup Event Listeners
+     */
+    function setupEvents() {
+      // Perubahan tanggal & jam
+      elDate.addEventListener('change', (e) => {
+        state.date = e.target.value;
+        saveState();
+        renderAll();
+      });
+
+      elTime.addEventListener('change', (e) => {
+        state.time = e.target.value;
+        saveState();
+        renderAll();
+      });
+
+      // Tombol Set Waktu Sekarang
+      elBtnNow.addEventListener('click', () => {
+        const { dateStr, timeStr } = getCurrentDateTime();
+        state.date = dateStr;
+        state.time = timeStr;
+        elDate.value = dateStr;
+        elTime.value = timeStr;
+        saveState();
+        renderAll();
+        showToast('Waktu diperbarui ke saat ini');
+      });
+
+      // Opsi Format
+      elOptUppercase.addEventListener('change', (e) => {
+        state.uppercase = e.target.checked;
+        saveState();
+        renderAll();
+      });
+
+      elOptBulletSpace.addEventListener('change', (e) => {
+        state.bulletSpace = e.target.checked;
+        saveState();
+        renderAll();
+      });
+
+      // Setup input Enter & auto-resize untuk 3 kategori
+      ['cat1', 'cat2', 'cat3'].forEach((catKey) => {
+        const inputEl = document.getElementById(`input-${catKey}`);
+        inputEl.addEventListener('input', () => autoResizeTextarea(inputEl));
+        inputEl.addEventListener('keydown', (e) => {
+          // Enter tanpa Shift langsung menambahkan item
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            addMenuFromInput(catKey);
+          }
+        });
+      });
+
+      // Tombol Salin
+      elBtnCopy.addEventListener('click', copyReportToClipboard);
+
+      // Modal Reset Data
+      elBtnResetModal.addEventListener('click', () => {
+        elResetModal.classList.remove('hidden');
+        elResetModal.classList.add('flex');
+      });
+
+      elBtnCancelReset.addEventListener('click', () => {
+        elResetModal.classList.add('hidden');
+        elResetModal.classList.remove('flex');
+      });
+
+      elResetModal.addEventListener('click', (e) => {
+        if (e.target === elResetModal) {
+          elResetModal.classList.add('hidden');
+          elResetModal.classList.remove('flex');
+        }
+      });
+
+      elBtnConfirmReset.addEventListener('click', () => {
+        const { dateStr, timeStr } = getCurrentDateTime();
+        state.date = dateStr;
+        state.time = timeStr;
+        state.cat1 = [];
+        state.cat2 = [];
+        state.cat3 = [];
+
+        elDate.value = dateStr;
+        elTime.value = timeStr;
+
+        saveState();
+        renderAll();
+
+        elResetModal.classList.add('hidden');
+        elResetModal.classList.remove('flex');
+        showToast('Semua data berhasil direset!');
+      });
+    }
+
+    // Inisialisasi aplikasi saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      setupEvents();
+      renderAll();
+    });
+  </script>
+</body>
+</html>
